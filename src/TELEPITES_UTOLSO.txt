@@ -1,0 +1,180 @@
+╔═════════════════════════════════════════════════════════════════════════════╗
+║  SZAKNYELVTAN PRO v5.2.0 - MULTI-LANGUAGE VILLANYSZERELŐ TANULÓALKALMAZÁS  ║
+║  🇭🇺 Magyar + 🇩🇪 Német + 🇬🇧 Angol - TELJES FUNKCIONALITÁS                  ║
+╚═════════════════════════════════════════════════════════════════════════════╝
+
+📦 TELEPÍTÉS - Windows PowerShell (Administrator)
+═════════════════════════════════════════════════════════════════════════════
+
+1️⃣ NAVIGÁLJ A MAPPÁHOZ:
+   cd C:\Users\my405\Downloads\aaa\szaknyelvtan-FINAL
+
+2️⃣ TELEPÍTSD A CSOMAGOKAT:
+   npm install
+
+   ⏳ Ez 2-3 percet vesz igénybe az első futtatáskor
+   Ha hibát kapsz, próbáld meg:
+   npm install --legacy-peer-deps
+
+3️⃣ INDÍTSD AZ ALKALMAZÁST:
+   npm run dev
+
+   ✅ Nyitva lesz: http://localhost:5173/
+
+4️⃣ LÉPJ BE A BÖNGÉSZŐBE:
+   - Firefox, Chrome, Edge, vagy Safari
+   - Az URL: http://localhost:5173/
+
+═════════════════════════════════════════════════════════════════════════════
+🎯 FUNKCIÓK - ÖT VERZIÓ
+═════════════════════════════════════════════════════════════════════════════
+
+📚 NYELVTAN (100 tétel)
+├─ Kártyák módban tanulj
+├─ Kvíz - 4 válaszlehetőséggel
+├─ Párosítás - magyar/német szó-párosítás
+├─ Írás - gépeld be a fordítást
+└─ Szövegértés - hallgass meg és válaszolj
+
+🔤 SZÓKINCS (200 tétel - eszközök, gépek, anyagok, védelem, elektro)
+├─ Szerszámok (kézi + gépek)
+├─ Anyagok (vezetékek, csatlakozók, csavarok)
+├─ Védelem (PPE, biztonsági felszerelés)
+└─ Elektro (alkatrészek, mérőműszerek)
+
+📝 MONDATOK (50 építkezési szituáció)
+├─ Valós munkahelyzetek
+├─ Munkabiztonsági szabályok
+└─ Kommunikáció az építkezésen
+
+📖 SZÖVEGÉRTÉS (50 tétel)
+├─ Hallgatott mondatok feldolgozása
+├─ Kérdésekre válaszolás
+├─ Beszéd- és írás gyakorlat
+└─ Valós szituációk megértése
+
+🔢 SZÁMOK (0-10000)
+├─ Kvíz - szám felismeréshez
+├─ Párosítás - szöveg/szám párosítás
+├─ Írás - fordítsd nemetül/magyarul
+└─ Kártyakészítő - saját számkészlet
+
+═════════════════════════════════════════════════════════════════════════════
+🌐 MULTI-LANGUAGE TÁMOGATÁS
+═════════════════════════════════════════════════════════════════════════════
+
+HOME KÉPERNYŐN:
+  🌐 NYELVEK gomb → Pipáld meg a nyelveket:
+     ☑️ 🇭🇺 Magyar
+     ☑️ 🇩🇪 Deutsch
+     ☐ 🇬🇧 English
+
+FUNKCIONALITÁS:
+  ✅ Kártyák - Összes kiválasztott nyelvről hallgass
+  ✅ Kvíz - Kérdés egyik nyelvből, válasz magyarból
+  ✅ Párosítás - Magy/Német/Angol párosítás
+  ✅ Írás - Fordítsd a kiválasztott nyelvből
+  ✅ Szövegértés - Hallgasd meg és válaszolj
+  ✅ Hangkiadás - 🔊 "Összes" gomb összes nyelvről
+
+═════════════════════════════════════════════════════════════════════════════
+💾 ADATBÁZIS - 950+ TÉTEL
+═════════════════════════════════════════════════════════════════════════════
+
+Nyelvtan:      100 tétel (alapok, magázódás, szórendiség, villanyszerelés, építkezés)
+Szókincs:      200 tétel (szerszámok, gépek, anyagok, védelem, elektro)
+Mondatok:      50 tétel (építkezési szituációk)
+Szövegértés:   50 tétel (hallgatás & megfelelő válasz)
+Számok:        23 tétel (0, 1-12, 20, 30, 40, 50, 60, 70, 80, 90, 100, 220, 1000, 10000)
+
+NYELVEK:
+- Magyar (hu)
+- Német (de)
+- Angol (en)
+
+═════════════════════════════════════════════════════════════════════════════
+⚙️ BEÁLLÍTÁSOK & FEJLŐDÉS
+═════════════════════════════════════════════════════════════════════════════
+
+HOME képernyőn:
+  📊 STAT gomb     → Összes próbálkozás, helyes válaszok, pontosság %
+  ⚠️ HIBA gomb      → Összes hiba - gyakorolj az elrontott szavakkal
+  🎯 "Hibák" módszer → Csak a helytelen válaszok
+
+PRÁKTIKUM:
+  ☑️ "Csak hibák" - csak az elrontott szavakkal tanulj
+  ☐ "Összes" - az összes szavakkal tanulj
+
+═════════════════════════════════════════════════════════════════════════════
+🔧 HIBAELHÁRÍTÁS
+═════════════════════════════════════════════════════════════════════════════
+
+❌ "npm: A parancs nem ismert"
+   → Telepítsd a Node.js-t: https://nodejs.org/
+
+❌ Port 5173 már használatban van
+   → Módosítsd a vite.config.js portját vagy:
+   → pkill -f "node" (Mac/Linux) vagy "taskkill /F /IM node.exe" (Windows)
+
+❌ "Module not found"
+   → Töröld a node_modules mappát és próbáld meg:
+   → rm -rf node_modules (Mac/Linux)
+   → rmdir node_modules /s /q (Windows)
+   → npm install
+
+❌ Hangkiadás nem működik
+   → Chrome/Edge/Firefox szükséges (Safari korlátozott)
+   → Windows: Győződj meg, hogy a hangerő nem 0
+
+═════════════════════════════════════════════════════════════════════════════
+📱 BÖNGÉSZŐK - AJÁNLOTT
+═════════════════════════════════════════════════════════════════════════════
+
+✅ Google Chrome (ajánlott)
+✅ Microsoft Edge (ajánlott)
+✅ Mozilla Firefox (ajánlott)
+✅ Safari (korlátozott hangkiadás)
+
+═════════════════════════════════════════════════════════════════════════════
+🚀 FEJLESZTÉS FOLYAMATBAN
+═════════════════════════════════════════════════════════════════════════════
+
+- ✅ Múlti-language támogatás (HU/DE/EN)
+- ✅ 950+ tétel az adatbázisban
+- ✅ 5+ játékmód
+- ✅ Haladás mentése
+- ✅ Statisztika
+- ✅ Hibák nyomon követése
+- 🔜 Mobilalkalmazás
+- 🔜 Offline módus
+- 🔜 Hangkiadás javítása (neural)
+- 🔜 Több nyelvű mondatok
+
+═════════════════════════════════════════════════════════════════════════════
+📞 SUPPORT
+═════════════════════════════════════════════════════════════════════════════
+
+Hiba bejelentése:
+  1. Nézd meg a böngésző konzolt (F12)
+  2. Másold ki a hibaüzenetet
+  3. Küld el a fejlesztőnek
+
+═════════════════════════════════════════════════════════════════════════════
+✨ VERSZIÓTÖRTÉNET
+═════════════════════════════════════════════════════════════════════════════
+
+v1.0   - Alapverzió (Electron hibákkal)
+v2.0   - Vite + React átállás
+v3.0   - 150 tétel, 6 játékmód
+v4.0   - Teljes adatbázis, hibakezelés, statisztika
+v5.0   - Hatalmas bővítés (950+ tétel, 100 nyelvtan, 200 szókincs, 50 mondat)
+v5.1   - Összes játékmód FIX
+v5.2   - ⭐ MULTI-LANGUAGE (HU/DE/EN) - TELJES TÁMOGATÁS!
+
+═════════════════════════════════════════════════════════════════════════════
+
+🎉 GRATULÁLUNK! Az alkalmazás készen áll a használatra!
+
+Élvezd a tanulást! 🚀
+
+═════════════════════════════════════════════════════════════════════════════
