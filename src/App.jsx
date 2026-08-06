@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import data from './data.json'
 
-function App() {
+function App() 
   const [screen, setScreen] = useState('language')
   const [lang, setLang] = useState(null)
   const [category, setCategory] = useState('szókincs')
