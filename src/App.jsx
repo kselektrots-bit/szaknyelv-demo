@@ -535,40 +535,53 @@ function App() {
       }
       const shuffled = getShuffled()
 
+if (mode === 'pairing') {
+      const pairingItems = items // ÖSSZES SZÓT HASZNÁLJA!
+      const getShuffled = () => {
+        const seed = pairingItems.map(i => i.id).join(',')
+        const seededRandom = (index) => {
+          const x = Math.sin(index * seed.length) * 10000
+          return x - Math.floor(x)
+        }
+        return pairingItems.slice().sort((a, b) => seededRandom(a.id) - seededRandom(b.id))
+      }
+      const shuffled = getShuffled()
+
       return (
         <div style={{ padding: '20px', background: '#1C1D21', color: '#fff', minHeight: '100vh' }}>
-          <h2>🎯 Párosítás</h2>
-          <p style={{ color: '#8A8D96', marginBottom: '20px' }}>Párosítsd a szavakat! ({Object.keys(pairs).length} / {pairingItems.length}) {errorMode && '(HIBA MÓD)'}</p>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+          <h2>🎯 Párosítás - Összes Szó</h2>
+          <p style={{ color: '#8A8D96', marginBottom: '20px' }}>Párosítsd a szavakat! ({Object.keys(pairs).length} / {pairingItems.length})</p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px', maxHeight: '70vh', overflow: 'auto' }}>
             <div>
-              <div style={{ color: '#FF6B35', fontWeight: 'bold', marginBottom: '10px', textAlign: 'center' }}>Magyar</div>
+              <div style={{ color: '#FF6B35', fontWeight: 'bold', marginBottom: '10px', textAlign: 'center', position: 'sticky', top: 0, background: '#1C1D21', zIndex: 10 }}>Magyar</div>
               {pairingItems.map(item => (
-                <button key={item.id} onClick={() => { if (!pairs[item.id]) setSelectedHu(selectedHu === item.id ? null : item.id) }} disabled={pairs[item.id]} style={{ display: 'block', width: '100%', padding: '12px', margin: '5px 0', background: pairs[item.id] ? '#4CAF7D' : selectedHu === item.id ? '#FF6B35' : '#333', color: '#fff', border: selectedHu === item.id ? '2px solid #FF6B35' : '1px solid #666', cursor: pairs[item.id] ? 'default' : 'pointer', borderRadius: '6px', fontWeight: 'bold', opacity: pairs[item.id] ? 0.5 : 1 }}>
+                <button key={item.id} onClick={() => { if (!pairs[item.id]) setSelectedHu(selectedHu === item.id ? null : item.id) }} disabled={pairs[item.id]} style={{ display: 'block', width: '100%', padding: '12px', margin: '5px 0', background: pairs[item.id] ? '#4CAF7D' : selectedHu === item.id ? '#FF6B35' : '#333', color: '#fff', border: selectedHu === item.id ? '2px solid #FF6B35' : '1px solid #666', cursor: pairs[item.id] ? 'default' : 'pointer', borderRadius: '6px', fontWeight: 'bold', opacity: pairs[item.id] ? 0.5 : 1, textAlign: 'left', fontSize: '14px' }}>
                   {pairs[item.id] ? '✅' : ''} {item.hu}
                 </button>
               ))}
             </div>
             <div>
-              <div style={{ color: '#FF6B35', fontWeight: 'bold', marginBottom: '10px', textAlign: 'center' }}>{getLangName()}</div>
+              <div style={{ color: '#FF6B35', fontWeight: 'bold', marginBottom: '10px', textAlign: 'center', position: 'sticky', top: 0, background: '#1C1D21', zIndex: 10 }}>{getLangName()}</div>
               {shuffled.map((target) => (
-                <button key={target.id} onClick={() => { if (selectedHu) { if (selectedHu === target.id) { bump(target.id, true); setPairs({ ...pairs, [target.id]: true }); setSelectedHu(null); setScore(score + 1); setSessionScore(sessionScore + 1) } else { bump(target.id, false); setSelectedHu(null) } } }} disabled={pairs[target.id] || !selectedHu} style={{ display: 'block', width: '100%', padding: '12px', margin: '5px 0', background: pairs[target.id] ? '#4CAF7D' : '#333', color: '#fff', border: '1px solid #666', cursor: pairs[target.id] || !selectedHu ? 'default' : 'pointer', borderRadius: '6px', fontWeight: 'bold', opacity: pairs[target.id] ? 0.5 : !selectedHu ? 0.5 : 1 }}>
+                <button key={target.id} onClick={() => { if (selectedHu) { if (selectedHu === target.id) { bump(target.id, true); setPairs({ ...pairs, [target.id]: true }); setSelectedHu(null); setScore(score + 1); setSessionScore(sessionScore + 1) } else { bump(target.id, false); setSelectedHu(null) } } }} disabled={pairs[target.id] || !selectedHu} style={{ display: 'block', width: '100%', padding: '12px', margin: '5px 0', background: pairs[target.id] ? '#4CAF7D' : '#333', color: '#fff', border: '1px solid #666', cursor: pairs[target.id] || !selectedHu ? 'default' : 'pointer', borderRadius: '6px', fontWeight: 'bold', opacity: pairs[target.id] ? 0.5 : !selectedHu ? 0.5 : 1, textAlign: 'left', fontSize: '14px' }}>
                   {pairs[target.id] ? '✅' : ''} {getText(target)}
                 </button>
               ))}
             </div>
           </div>
+
           {Object.keys(pairs).length === pairingItems.length && (
-            <div style={{ background: '#4CAF7D', color: '#fff', padding: '20px', borderRadius: '8px', textAlign: 'center', marginBottom: '20px', fontWeight: 'bold' }}>
-              ✅ Gratulálunk! Összes párosítva!
+            <div style={{ background: '#4CAF7D', color: '#fff', padding: '30px', borderRadius: '8px', textAlign: 'center', marginBottom: '20px', fontWeight: 'bold', fontSize: '20px' }}>
+              🎉 GRATULÁLUNK! ÖSSZES SZÓ PÁROSÍTVA! 🎉
             </div>
           )}
+
           <button onClick={() => { setMode(null); setPairs({}); setSelectedHu(null); setIdx(0) }} style={{ padding: '12px', width: '100%', background: '#666', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '8px' }}>
             ← Vissza
           </button>
         </div>
       )
     }
-
     if (mode === 'writing' && displayItem) {
       const handleCheck = () => {
         const isCorrect = input.toLowerCase().trim() === getText(displayItem).toLowerCase()
