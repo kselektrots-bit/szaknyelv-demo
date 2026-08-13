@@ -332,8 +332,7 @@ function App() {
             <p>📚 <strong>Összes elem:</strong> {stats.total}</p>
             <p>✅ <strong>Megtanult (3+ szint):</strong> {stats.masteredCount}</p>
             <p>🔄 <strong>Tanulás alatt (1-2 szint):</strong> {stats.learningCount}</p>
-            <p>❌ <strong>Hibás (<80%):</strong> {errorWords}</p>
-            <p>📊 <strong>Összes hiba:</strong> {stats.totalErrors}</p>
+            <p>❌ <strong>{"Hibás (<80%):"}</strong> {errorWords}</p>            <p>📊 <strong>Összes hiba:</strong> {stats.totalErrors}</p>
             <p style={{ color: '#4CAF7D', fontWeight: 'bold', marginTop: '10px' }}>🎯 <strong>Haladás:</strong> {Math.round((stats.masteredCount / (stats.total || 1)) * 100)}%</p>
           </div>
         )}
