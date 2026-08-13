@@ -308,16 +308,15 @@ function App() {
           <button onClick={() => { setScreen('learn'); setMode(null); setSelected(null); setShowResult(false); setSessionScore(0); setRoundItems([]) }} style={{ padding: '20px', fontSize: '18px', background: '#FF6B35', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
             📚 Tanulás
           </button>
-          <div style={{ background: '#25272E', padding: '15px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+<div style={{ background: '#25272E', padding: '15px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
-              <div style={{ fontWeight: 'bold' }}>🐛 Hiba Mód (<80%)</div>
-              <div style={{ fontSize: '12px', color: '#8A8D96' }}>Csak gyengébb szavak</div>
+              <div style={{ fontWeight: 'bold' }}>🐛 Hiba Mód (80% alatt)</div>
+              <div style={{ fontSize: '12px', color: '#8A8D96' }}>Csak gyenge szavak</div>
             </div>
             <button onClick={() => setErrorMode(!errorMode)} style={{ padding: '8px 16px', background: errorMode ? '#4CAF7D' : '#666', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
-              {errorMode ? 'BEKAPCS.' : 'KIKAPCS.'}
+              {errorMode ? 'BEKAPCS' : 'KIKAPCS'}
             </button>
-          </div>
-          <button onClick={() => setShowStats(!showStats)} style={{ padding: '15px', fontSize: '16px', background: '#666', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
+          </div>          <button onClick={() => setShowStats(!showStats)} style={{ padding: '15px', fontSize: '16px', background: '#666', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
             📊 Statisztika
           </button>
           <button onClick={() => setScreen('settings')} style={{ padding: '15px', fontSize: '16px', background: '#666', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>
