@@ -8,7 +8,7 @@ function App() {
   const [mode, setMode] = useState(null)
   const [idx, setIdx] = useState(0)
   const [progress, setProgress] = useState({})
-  const [wordStats, setWordStats] = useState({}) // HIBA MÓD TRACKING
+  const [wordStats, setWordStats] = useState({})
   const [flipped, setFlipped] = useState(false)
   const [selected, setSelected] = useState(null)
   const [showResult, setShowResult] = useState(false)
@@ -28,8 +28,10 @@ function App() {
   const [deferredPrompt, setDeferredPrompt] = useState(null)
   const [installPromptVisible, setInstallPromptVisible] = useState(false)
   const [roundItems, setRoundItems] = useState([])
-  const [pairingItems, setPairingItems] = useState([]) // RÖGZÍTETT PÁROSÍTÁS
-  const [pairingShuffled, setPairingShuffled] = useState([]) // RÖGZÍTETT SHUFFLE
+  const [pairingItems, setPairingItems] = useState([])
+  const [pairingShuffled, setPairingShuffled] = useState([])
+  const [currentGappedDisplay, setCurrentGappedDisplay] = useState('')
+  const [currentCorrectAnswer, setCurrentCorrectAnswer] = useState('')
 
   useEffect(() => {
     const handler = (e) => {
@@ -90,7 +92,6 @@ function App() {
 
   const items = getItems()
 
-  // HIBA MÓD: CSAK <80% ARÁNYÚ SZAVAK
   const getFilteredItems = () => {
     if (!errorMode) return items
     return items.filter(i => {
@@ -102,7 +103,6 @@ function App() {
 
   const filteredItems = getFilteredItems()
 
-  // RANDOMIZÁLT FELADATOK - HIBÁS SZAVAK PRIORITÁS
   const getRandomizedItems = (source, count = 10) => {
     const errors = source.filter(i => {
       const stats = wordStats[i.id] || { correct: 0, total: 0 }
@@ -149,7 +149,6 @@ function App() {
       }
     }))
 
-    // WORDSTATS TRACKING
     setWordStats(prev => ({
       ...prev,
       [id]: {
@@ -172,17 +171,26 @@ function App() {
     return obj.de || obj.hu
   }
 
-  const generateQuizOptions = (currentItem) => {
+  const generateBetterQuizOptions = (currentItem, itemIdx) => {
     const allItems = filteredItems.filter(i => i.id !== currentItem.id)
-    const shuffled = allItems.sort(() => Math.random() - 0.5).slice(0, 3)
-    const options = [currentItem, ...shuffled].sort(() => Math.random() - 0.5)
-    return options
-  }
-
-  const generateListeningOptions = (currentItem) => {
-    const allItems = filteredItems.filter(i => i.id !== currentItem.id)
-    const shuffled = allItems.sort(() => Math.random() - 0.5).slice(0, 3)
-    const options = [currentItem, ...shuffled].sort(() => Math.random() - 0.5)
+    const stats = wordStats[currentItem.id] || { correct: 0, total: 0 }
+    const errorRate = stats.total === 0 ? 0 : Math.round(((stats.total - stats.correct) / stats.total) * 100)
+    
+    // 5 VÁLASZ: 4 rossz + 1 jó
+    let wrongOptions = allItems.sort(() => Math.random() - 0.5).slice(0, 4)
+    
+    // HA SOKSZOR HIBÁS, KEVÉSBÉ ISMÉTLŐDIK A JÓ VÁLASZ
+    let options = []
+    
+    if (errorRate > 60 && itemIdx % 3 !== 0) {
+      // Néha csak magyar alapnyelven
+      const correctInMagyar = { ...currentItem, en: currentItem.hu, de: currentItem.hu }
+      options = [correctInMagyar, ...wrongOptions].sort(() => Math.random() - 0.5)
+    } else {
+      // Normál: az egyik válasz mindig magyar
+      options = [currentItem, ...wrongOptions].sort(() => Math.random() - 0.5)
+    }
+    
     return options
   }
 
@@ -270,8 +278,6 @@ function App() {
   if (screen === 'home') {
     const stats = getStats()
     const badges = getBadges()
-    
-    // HIBA MÓD SZAVAK SZÁMA
     const errorWords = filteredItems.length
     
     return (
@@ -308,7 +314,7 @@ function App() {
           <button onClick={() => { setScreen('learn'); setMode(null); setSelected(null); setShowResult(false); setSessionScore(0); setRoundItems([]) }} style={{ padding: '20px', fontSize: '18px', background: '#FF6B35', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
             📚 Tanulás
           </button>
-<div style={{ background: '#25272E', padding: '15px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ background: '#25272E', padding: '15px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
               <div style={{ fontWeight: 'bold' }}>🐛 Hiba Mód (80% alatt)</div>
               <div style={{ fontSize: '12px', color: '#8A8D96' }}>Csak gyenge szavak</div>
@@ -316,7 +322,8 @@ function App() {
             <button onClick={() => setErrorMode(!errorMode)} style={{ padding: '8px 16px', background: errorMode ? '#4CAF7D' : '#666', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
               {errorMode ? 'BEKAPCS' : 'KIKAPCS'}
             </button>
-          </div>          <button onClick={() => setShowStats(!showStats)} style={{ padding: '15px', fontSize: '16px', background: '#666', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
+          </div>
+          <button onClick={() => setShowStats(!showStats)} style={{ padding: '15px', fontSize: '16px', background: '#666', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
             📊 Statisztika
           </button>
           <button onClick={() => setScreen('settings')} style={{ padding: '15px', fontSize: '16px', background: '#666', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>
@@ -332,7 +339,8 @@ function App() {
             <p>📚 <strong>Összes elem:</strong> {stats.total}</p>
             <p>✅ <strong>Megtanult (3+ szint):</strong> {stats.masteredCount}</p>
             <p>🔄 <strong>Tanulás alatt (1-2 szint):</strong> {stats.learningCount}</p>
-            <p>❌ <strong>{"Hibás (<80%):"}</strong> {errorWords}</p>            <p>📊 <strong>Összes hiba:</strong> {stats.totalErrors}</p>
+            <p>❌ <strong>{"Hibás (<80%):"}</strong> {errorWords}</p>
+            <p>📊 <strong>Összes hiba:</strong> {stats.totalErrors}</p>
             <p style={{ color: '#4CAF7D', fontWeight: 'bold', marginTop: '10px' }}>🎯 <strong>Haladás:</strong> {Math.round((stats.masteredCount / (stats.total || 1)) * 100)}%</p>
           </div>
         )}
@@ -358,10 +366,10 @@ function App() {
               📚 Kártyák (Max 10/kör)
             </button>
             <button onClick={() => { setMode('quiz'); setIdx(0); setSelected(null); setShowResult(false); setCurrentQuizOptions([]); setRoundItems([]) }} style={{ padding: '15px', background: '#25272E', color: '#fff', border: '2px solid #FF6B35', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
-              ❓ Kvíz (Max 10/kör)
+              ❓ Kvíz (Max 10/kör, 5 válasz)
             </button>
             <button onClick={() => { setMode('listening'); setIdx(0); setSelected(null); setShowResult(false); setCurrentListeningOptions([]); setRoundItems([]) }} style={{ padding: '15px', background: '#25272E', color: '#fff', border: '2px solid #FF6B35', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
-              🔊 Hallgatás (Max 10/kör)
+              🔊 Hallgatás (Max 10/kör, 5 válasz)
             </button>
             <button onClick={() => { setMode('pairing'); setIdx(0); setPairs({}); setSelectedHu(null); const items6 = getRandomizedItems(filteredItems, 6); setPairingItems(items6); setPairingShuffled(items6.slice().sort(() => Math.random() - 0.5)); setRoundItems([]) }} style={{ padding: '15px', background: '#25272E', color: '#fff', border: '2px solid #FF6B35', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
               🎯 Párosítás (6-os csoport)
@@ -369,7 +377,7 @@ function App() {
             <button onClick={() => { setMode('writing'); setIdx(0); setInput(''); setChecked(false); setRoundItems([]) }} style={{ padding: '15px', background: '#25272E', color: '#fff', border: '2px solid #FF6B35', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
               ✍️ Gépelés (Max 10/kör)
             </button>
-            <button onClick={() => { setMode('fillgap'); setIdx(0); setInput(''); setChecked(false); setRoundItems([]) }} style={{ padding: '15px', background: '#25272E', color: '#fff', border: '2px solid #FF6B35', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
+            <button onClick={() => { setMode('fillgap'); setIdx(0); setInput(''); setChecked(false); setCurrentGappedDisplay(''); setCurrentCorrectAnswer(''); setRoundItems([]) }} style={{ padding: '15px', background: '#25272E', color: '#fff', border: '2px solid #FF6B35', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
               🔤 Szócsonka (Max 10/kör)
             </button>
           </div>
@@ -409,7 +417,7 @@ function App() {
     }
 
     if (mode === 'quiz' && displayItem) {
-      const quizOptions = currentQuizOptions.length > 0 ? currentQuizOptions : generateQuizOptions(displayItem)
+      const quizOptions = currentQuizOptions.length > 0 ? currentQuizOptions : generateBetterQuizOptions(displayItem, idx)
       if (currentQuizOptions.length === 0) {
         setCurrentQuizOptions(quizOptions)
       }
@@ -467,7 +475,7 @@ function App() {
     }
 
     if (mode === 'listening' && displayItem) {
-      const listeningOptions = currentListeningOptions.length > 0 ? currentListeningOptions : generateListeningOptions(displayItem)
+      const listeningOptions = currentListeningOptions.length > 0 ? currentListeningOptions : generateBetterQuizOptions(displayItem, idx)
       if (currentListeningOptions.length === 0) {
         setCurrentListeningOptions(listeningOptions)
       }
@@ -598,31 +606,38 @@ function App() {
     }
 
     if (mode === 'fillgap' && displayItem) {
-      const targetText = getText(displayItem)
-      let gappedDisplay = ''
-      let correctAnswer = targetText
+      useEffect(() => {
+        if (currentGappedDisplay === '') {
+          const targetText = getText(displayItem)
+          let gappedDisplay = ''
+          let correctAnswer = targetText
 
-      if (category === 'mondatok') {
-        const words = targetText.split(' ')
-        const randomWordIdx = Math.floor(Math.random() * words.length)
-        gappedDisplay = words.map((word, idx) => idx === randomWordIdx ? '______' : word).join(' ')
-        correctAnswer = words[randomWordIdx]
-      } else {
-        if (targetText.length > 2) {
-          const randomPos = Math.floor(Math.random() * (targetText.length - 2))
-          const gapLength = Math.min(3, Math.floor(targetText.length / 2))
-          const before = targetText.substring(0, randomPos)
-          const gap = '_'.repeat(gapLength)
-          const after = targetText.substring(randomPos + gapLength)
-          gappedDisplay = before + gap + after
-        } else {
-          gappedDisplay = targetText
+          if (category === 'mondatok') {
+            const words = targetText.split(' ')
+            const randomWordIdx = Math.floor(Math.random() * words.length)
+            gappedDisplay = words.map((word, i) => i === randomWordIdx ? '______' : word).join(' ')
+            correctAnswer = words[randomWordIdx]
+          } else {
+            if (targetText.length > 2) {
+              const randomPos = Math.floor(Math.random() * (targetText.length - 2))
+              const gapLength = Math.min(3, Math.floor(targetText.length / 2))
+              const before = targetText.substring(0, randomPos)
+              const gap = '_'.repeat(gapLength)
+              const after = targetText.substring(randomPos + gapLength)
+              gappedDisplay = before + gap + after
+            } else {
+              gappedDisplay = targetText
+            }
+            correctAnswer = targetText
+          }
+
+          setCurrentGappedDisplay(gappedDisplay)
+          setCurrentCorrectAnswer(correctAnswer)
         }
-        correctAnswer = targetText
-      }
+      }, [displayItem.id])
 
       const handleCheck = () => {
-        const isCorrect = input.toLowerCase().trim() === correctAnswer.toLowerCase()
+        const isCorrect = input.toLowerCase().trim() === currentCorrectAnswer.toLowerCase()
         setCorrect(isCorrect)
         setChecked(true)
         if (isCorrect) {
@@ -645,12 +660,12 @@ function App() {
               {category === 'mondatok' ? 'Egészítsd ki a mondatot!' : 'Egészítsd ki a szót!'}
             </div>
             <div style={{ fontSize: category === 'mondatok' ? '18px' : '28px', fontWeight: 'bold', marginBottom: '15px', letterSpacing: '3px', color: '#FF6B35' }}>
-              {gappedDisplay}
+              {currentGappedDisplay}
             </div>
             <div style={{ fontSize: '16px', color: '#8A8D96', marginBottom: '15px' }}>
               {category === 'mondatok' ? 'Mondat: ' : 'Fordítás: '}<strong>{displayItem.hu}</strong>
             </div>
-            <button onClick={() => { const utterance = new SpeechSynthesisUtterance(targetText); utterance.lang = lang === 'en' ? 'en-US' : 'de-DE'; utterance.rate = 0.8; speechSynthesis.speak(utterance) }} style={{ padding: '10px 20px', background: '#FF6B35', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
+            <button onClick={() => { const utterance = new SpeechSynthesisUtterance(getText(displayItem)); utterance.lang = lang === 'en' ? 'en-US' : 'de-DE'; utterance.rate = 0.8; speechSynthesis.speak(utterance) }} style={{ padding: '10px 20px', background: '#FF6B35', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
               🔊 Hallgasd meg
             </button>
           </div>
@@ -666,15 +681,15 @@ function App() {
               </div>
               {!correct && (
                 <p style={{ textAlign: 'center', marginBottom: '20px', color: '#8A8D96', background: '#333', padding: '15px', borderRadius: '8px' }}>
-                  Helyes: <strong style={{ color: '#4CAF7D' }}>{correctAnswer}</strong>
+                  Helyes: <strong style={{ color: '#4CAF7D' }}>{currentCorrectAnswer}</strong>
                 </p>
               )}
-              <button onClick={() => { if (idx + 1 < 10) { setIdx(idx + 1); setInput(''); setChecked(false) } else { setRoundItems(getRandomizedItems(filteredItems, 10)); setIdx(0); setInput(''); setChecked(false) } }} style={{ padding: '15px', width: '100%', background: '#4CAF7D', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '8px', fontWeight: 'bold' }}>
+              <button onClick={() => { if (idx + 1 < 10) { setIdx(idx + 1); setInput(''); setChecked(false); setCurrentGappedDisplay(''); setCurrentCorrectAnswer('') } else { setRoundItems(getRandomizedItems(filteredItems, 10)); setIdx(0); setInput(''); setChecked(false); setCurrentGappedDisplay(''); setCurrentCorrectAnswer('') } }} style={{ padding: '15px', width: '100%', background: '#4CAF7D', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '8px', fontWeight: 'bold' }}>
                 {idx + 1 >= 10 ? '✅ Új kör!' : '→ Következő'}
               </button>
             </>
           )}
-          <button onClick={() => { setMode(null); setInput(''); setChecked(false); setRoundItems([]) }} style={{ padding: '12px', marginTop: '10px', width: '100%', background: '#666', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '8px' }}>
+          <button onClick={() => { setMode(null); setInput(''); setChecked(false); setRoundItems([]); setCurrentGappedDisplay(''); setCurrentCorrectAnswer('') }} style={{ padding: '12px', marginTop: '10px', width: '100%', background: '#666', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '8px' }}>
             ← Vissza
           </button>
         </div>
